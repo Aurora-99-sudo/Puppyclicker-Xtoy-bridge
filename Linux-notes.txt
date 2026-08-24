@@ -1,0 +1,5 @@
+run in console within the clicker-to-xtoy dir
+
+chmod +x Setup-Linux.sh
+
+chmod +x launcher.sh
