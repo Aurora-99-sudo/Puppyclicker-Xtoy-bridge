@@ -268,12 +268,14 @@ class App:
 
         # Fixed-size window.
         self.root.geometry(
-            "760x1240"
+            "760x800"
         )
 
+        self.root.minsize(500, 500)
+        
         self.root.resizable(
-            False,
-            False
+            True,
+            True
         )
 
         self.config = load_config()
@@ -381,14 +383,66 @@ class App:
 
     def create_ui(self):
 
-        container = ttk.Frame(
+        # ----------------------------------------------------
+        # Scrollable container
+        # ----------------------------------------------------
+
+        canvas = tk.Canvas(
             self.root,
+            highlightthickness=0
+        )
+
+        scrollbar = ttk.Scrollbar(
+            self.root,
+            orient="vertical",
+            command=canvas.yview
+        )
+
+        canvas.configure(
+            yscrollcommand=scrollbar.set
+        )
+
+        scrollbar.pack(
+            side="right",
+            fill="y"
+        )
+
+        canvas.pack(
+            side="left",
+            fill="both",
+            expand=True
+        )
+
+        container = ttk.Frame(
+            canvas,
             padding=16
         )
 
-        container.pack(
-            fill="both",
-            expand=True
+        canvas_window = canvas.create_window(
+            (0, 0),
+            window=container,
+            anchor="nw"
+        )
+
+        def update_scroll_region(event=None):
+            canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+
+        def resize_container(event):
+            canvas.itemconfigure(
+                canvas_window,
+                width=event.width
+            )
+
+        container.bind(
+            "<Configure>",
+            update_scroll_region
+        )
+
+        canvas.bind(
+            "<Configure>",
+            resize_container
         )
 
         # ----------------------------------------------------
@@ -417,7 +471,11 @@ class App:
             anchor="w",
             pady=(2, 15)
         )
-
+        
+        #
+        # Sections 
+        #
+        
         self.create_connection_section(
             container
         )
